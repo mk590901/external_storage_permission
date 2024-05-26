@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 //import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -42,6 +43,8 @@ class CheckPermissionApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
 
   final permissionExternalStorage = Permission.manageExternalStorage;
+
+  static const platform = MethodChannel('com.example.myapp/channel');
 
   const HomePage({super.key});
 
@@ -102,7 +105,8 @@ class HomePage extends StatelessWidget {
     }
     if (status.isGranted) {
       //_listFiles();
-      print ("Permission granted");
+      String folder = await _getBatteryLevel();
+      print ("Permission granted->$folder");
     }
     else {
       print ("Permission denied");
@@ -112,6 +116,19 @@ class HomePage extends StatelessWidget {
     }
   }
 
+  //Future<void> _getBatteryLevel() async {
+  Future<String> _getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      //final int result = await platform.invokeMethod('getBatteryLevel');
+      final String result = await platform.invokeMethod('getPath');
+      batteryLevel = 'Battery level at $result % .';
+    } on PlatformException catch (e) {
+      batteryLevel = "Failed to get battery level: '${e.message}'.";
+    }
+    print(batteryLevel); // You can also update the UI with this value
+    return batteryLevel;
+  }
 
   @override
   Widget build(BuildContext context) {
