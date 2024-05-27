@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
-//import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:io';
+import 'banner_bloc.dart';
+import 'banner_events.dart';
+import 'banner_states.dart';
 
 void main() {
   runApp(const CheckPermissionApp());
@@ -17,25 +20,14 @@ class CheckPermissionApp extends StatelessWidget {
     return MaterialApp(
       title: 'Check Permission',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: //const HomePage(),
+      BlocProvider(
+        create: (context) => BannerBloc(),
+        child: const HomePage(),
+      ),
     );
   }
 }
@@ -97,12 +89,30 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  Future<void> requestFilesList(final String text) async {
-    print("requestFilesList->$text");
-    var status = await Permission.manageExternalStorage.status;
-    if (!status.isGranted) {
-      status = await Permission.manageExternalStorage.request();
+
+  void requestPermission(final BuildContext context) async {
+    PermissionStatus status = await Permission.manageExternalStorage.request();
+    if (status.isGranted) {
+      if (context.mounted) {
+        context.read<BannerBloc>().add(HideBanner());
+      }
     }
+  }
+
+  Future<void> requestFilesList(final BuildContext context, final String text) async {
+    print("requestFilesList->$text");
+
+    // context.read<BannerBloc>().add(ShowBanner());
+
+    PermissionStatus status = await Permission.manageExternalStorage.status;
+    if (!status.isGranted) {
+      //  Show banner
+      //@status = await Permission.manageExternalStorage.request();
+      if (context.mounted) {
+        context.read<BannerBloc>().add(ShowBanner());
+      }
+    }
+
     if (status.isGranted) {
       //_listFiles();
       String folder = await _getBatteryLevel();
@@ -110,13 +120,9 @@ class HomePage extends StatelessWidget {
     }
     else {
       print ("Permission denied");
-      // setState(() {
-      //   _files = ['Permission denied'];
-      // });
     }
   }
 
-  //Future<void> _getBatteryLevel() async {
   Future<String> _getBatteryLevel() async {
     String batteryLevel;
     try {
@@ -134,21 +140,98 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Material Banner with BLoC'),
+      ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Your main content here'),
+                ElevatedButton(
+                  onPressed: () {
+                    //@context.read<BannerBloc>().add(ShowBanner());
+                    requestFilesList(context, "Downloads");
+                  },
+                  child: const Text('Get Files List'),
+                ),
+              ],
+            ),
+          ),
+          BlocBuilder<BannerBloc, BannerState>(
+            builder: (context, state) {
+              if (state is BannerVisible) {
+                return Center(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.blueGrey,
+                      borderRadius: BorderRadius.circular(1),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: MaterialBanner(
+                      content: const Text(
+                        'To read and save data, you must allow the application access to the public folders of device.',
+                        style: TextStyle(color: Colors.blueGrey),),
+                      leading: const Icon(Icons.warning_amber, size: 32, color: Colors.blueGrey),
+                      backgroundColor: Colors.grey[350],
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            context.read<BannerBloc>().add(HideBanner());
+                          },
+                          child: const Text('DISMISS'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            requestPermission(context);
+                          },
+                          child: const Text('GET ACCESS'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink(); // An empty widget
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+
+/*
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('Check Permission Demo'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: externalStoragePermissionStatus,
-              child: const Text('Check permission'),
-            ),
-
-            ElevatedButton(
-              onPressed: filesList,//filesList,
-              child: const Text('Files list'),
-            ),
+            // ElevatedButton(
+            //   onPressed: externalStoragePermissionStatus,
+            //   child: const Text('Check permission'),
+            // ),
+            //
+            // ElevatedButton(
+            //   onPressed: filesList,//filesList,
+            //   child: const Text('Files list'),
+            // ),
 
             ElevatedButton(
               onPressed: () { requestFilesList("Downloads"); }, //filesList,
@@ -160,4 +243,5 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+   */
 }
