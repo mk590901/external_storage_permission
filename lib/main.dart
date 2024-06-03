@@ -99,7 +99,31 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  Future<void> requestFilesList(final BuildContext context, final String text) async {
+  // Future<void> requestFilesList(final BuildContext context, final String text) async {
+  //   print("requestFilesList->$text");
+  //
+  //   // context.read<BannerBloc>().add(ShowBanner());
+  //
+  //   PermissionStatus status = await Permission.manageExternalStorage.status;
+  //   if (!status.isGranted) {
+  //     //  Show banner
+  //     //@status = await Permission.manageExternalStorage.request();
+  //     if (context.mounted) {
+  //       context.read<BannerBloc>().add(ShowBanner());
+  //     }
+  //   }
+  //
+  //   if (status.isGranted) {
+  //     //_listFiles();
+  //     String folder = await _getBatteryLevel();
+  //     print ("Permission granted->$folder");
+  //   }
+  //   else {
+  //     print ("Permission denied");
+  //   }
+  // }
+
+  Future<void> requestFilesList(final BannerBloc bloc, final String text) async {
     print("requestFilesList->$text");
 
     // context.read<BannerBloc>().add(ShowBanner());
@@ -108,10 +132,8 @@ class HomePage extends StatelessWidget {
     if (!status.isGranted) {
       //  Show banner
       //@status = await Permission.manageExternalStorage.request();
-      if (context.mounted) {
-        context.read<BannerBloc>().add(ShowBanner());
-      }
-    }
+        bloc.add(ShowBanner());
+     }
 
     if (status.isGranted) {
       //_listFiles();
@@ -122,6 +144,7 @@ class HomePage extends StatelessWidget {
       print ("Permission denied");
     }
   }
+
 
   Future<String> _getBatteryLevel() async {
     String batteryLevel;
@@ -138,6 +161,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final bannerBloc = BlocProvider.of<BannerBloc>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Material Banner with BLoC'),
@@ -151,8 +177,7 @@ class HomePage extends StatelessWidget {
                 const Text('Your main content here'),
                 ElevatedButton(
                   onPressed: () {
-                    //@context.read<BannerBloc>().add(ShowBanner());
-                    requestFilesList(context, "Downloads");
+                    requestFilesList(bannerBloc, "Downloads");
                   },
                   child: const Text('Get Files List'),
                 ),
