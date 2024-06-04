@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../interfaces/i_async_process.dart';
 
 class AsyncExternalPathFuture implements IAsyncProcess {
@@ -15,8 +14,6 @@ class AsyncExternalPathFuture implements IAsyncProcess {
   bool _actionCompleted = false;
 
   AsyncExternalPathFuture();
-
-//  void greet({String name = 'Guest', int age = 18})
 
   @override
   void start(VoidCallback? failed, [VoidCallback? success, void Function(String)? aux]) {
