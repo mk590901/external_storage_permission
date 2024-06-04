@@ -1,11 +1,15 @@
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
+import 'dart:async';
 import 'banner_bloc.dart';
 import 'banner_events.dart';
 import 'banner_states.dart';
+import 'futures/async_external_storege_path_future.dart';
+import 'futures/async_external_storege_permission_future.dart';
 
 void main() {
   runApp(const CheckPermissionApp());
@@ -26,7 +30,7 @@ class CheckPermissionApp extends StatelessWidget {
       home: //const HomePage(),
       BlocProvider(
         create: (context) => BannerBloc(),
-        child: const HomePage(),
+        child: HomePage(),
       ),
     );
   }
@@ -34,11 +38,14 @@ class CheckPermissionApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
 
+  final AsyncPermissionFuture permissionFuture = AsyncPermissionFuture();
+  final AsyncExternalPathFuture pathFuture = AsyncExternalPathFuture();
+
   final permissionExternalStorage = Permission.manageExternalStorage;
 
   static const platform = MethodChannel('com.example.myapp/channel');
 
-  const HomePage({super.key});
+  HomePage({super.key});
 
   void externalStoragePermissionStatus() async {
     // Request location permission
@@ -137,7 +144,7 @@ class HomePage extends StatelessWidget {
 
     if (status.isGranted) {
       //_listFiles();
-      String folder = await _getBatteryLevel();
+      String folder = await getExternalStoragePath();
       print ("Permission granted->$folder");
     }
     else {
@@ -145,18 +152,16 @@ class HomePage extends StatelessWidget {
     }
   }
 
-
-  Future<String> _getBatteryLevel() async {
-    String batteryLevel;
+  Future<String> getExternalStoragePath() async {
+    String output;
     try {
-      //final int result = await platform.invokeMethod('getBatteryLevel');
-      final String result = await platform.invokeMethod('getPath');
-      batteryLevel = 'Battery level at $result % .';
+      final String result = await platform.invokeMethod('getPublicDocumentsFolder');
+      output = 'getExternalStoragePath-> $result.';
     } on PlatformException catch (e) {
-      batteryLevel = "Failed to get battery level: '${e.message}'.";
+      output = "Failed getExternalStoragePath: '${e.message}'.";
     }
-    print(batteryLevel); // You can also update the UI with this value
-    return batteryLevel;
+    print(output); // You can also update the UI with this value
+    return output;
   }
 
   @override
@@ -177,7 +182,19 @@ class HomePage extends StatelessWidget {
                 const Text('Your main content here'),
                 ElevatedButton(
                   onPressed: () {
-                    requestFilesList(bannerBloc, "Downloads");
+                    permissionFuture.start(
+                          () {
+                            bannerBloc.add(ShowBanner());
+                          },  //  Failed
+                          () {
+                            print ("******* Permission OK *******");
+                            //getExternalStoragePath();
+                            pathFuture.start(
+                                () { print('!Failed!'); },
+                                () { print('!Success!'); },
+                            );
+                      },  //  Ok
+                    );
                   },
                   child: const Text('Get Files List'),
                 ),

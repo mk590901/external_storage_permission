@@ -22,19 +22,9 @@ public class MainActivity extends FlutterActivity {
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
                 .setMethodCallHandler(
                         (call, result) -> {
-                            if (call.method.equals("getBatteryLevel")) {
-                                int batteryLevel = getBatteryLevel();
-                                if (batteryLevel != -1) {
-                                    result.success(batteryLevel);
-                                } else {
-                                    result.error("UNAVAILABLE", "Battery level not available.", null);
-                                }
-                            }
-                            else
-                            if (call.method.equals("getPath"))  {
-                                //result.success("Test");
-                                String folder = getPath();
-                                result.success(folder/*"Test"*/);
+                            if (call.method.equals("getPublicDocumentsFolder"))  {
+                                String folder = getPublicDocumentsFolder();
+                                result.success(folder);
                             }
                             else {
                                 result.notImplemented();
@@ -43,15 +33,15 @@ public class MainActivity extends FlutterActivity {
                 );
     }
 
-    private int getBatteryLevel() {
-        BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-        }
-        return -1;
-    }
+//    private int getBatteryLevel() {
+//        BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//            return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+//        }
+//        return -1;
+//    }
 
-    private String getPath() {
+    private String getPublicDocumentsFolder() {
         File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         String folderName = folder.getAbsolutePath();
         Log.d(TAG, "Downloads: " + folderName);
