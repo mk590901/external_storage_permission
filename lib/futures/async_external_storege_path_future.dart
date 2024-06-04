@@ -19,7 +19,7 @@ class AsyncExternalPathFuture implements IAsyncProcess {
   AsyncExternalPathFuture();
 
   @override
-  void start(VoidCallback? failed, VoidCallback? success, [void Function(String)? aux]) {
+  void start(VoidCallback? failed, [VoidCallback? success, void Function(String)? aux]) {
     _isActive = true;
     _actionCompleted = false;
     _process(success, failed, aux);

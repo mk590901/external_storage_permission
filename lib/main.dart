@@ -190,7 +190,7 @@ class HomePage extends StatelessWidget {
                             //getExternalStoragePath();
                             pathFuture.start(
                                 () { print('!Failed!'); },
-                                () { print('!Success!'); },
+                                null,//() { print('!Success!'); },
                                 (text) { print('!Aux!$text'); },
                             );
                       },  //  Ok
