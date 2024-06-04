@@ -7,8 +7,9 @@ import 'dart:async';
 import 'banner_bloc.dart';
 import 'banner_events.dart';
 import 'banner_states.dart';
-import 'futures/async_external_storege_path_future.dart';
-import 'futures/async_external_storege_permission_status_future.dart';
+import 'futures/async_external_storage_path_future.dart';
+import 'futures/async_external_storage_permission_request_future.dart';
+import 'futures/async_external_storage_permission_status_future.dart';
 
 void main() {
   runApp(const CheckPermissionApp());
@@ -37,7 +38,8 @@ class CheckPermissionApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
 
-  final AsyncPermissionStatusFuture permissionFuture = AsyncPermissionStatusFuture();
+  final AsyncPermissionStatusFuture permissionStatusFuture = AsyncPermissionStatusFuture();
+  final AsyncPermissionRequestFuture permissionRequestFuture = AsyncPermissionRequestFuture();
   final AsyncExternalPathFuture pathFuture = AsyncExternalPathFuture();
 
   final permissionExternalStorage = Permission.manageExternalStorage;
@@ -46,18 +48,6 @@ class HomePage extends StatelessWidget {
 
   HomePage({super.key});
 
-  void externalStoragePermissionStatus() async {
-    // Request location permission
-    final status = await permissionExternalStorage.request();
-    if (status == PermissionStatus.granted) {
-      // Get the current location
-      print('Location permission granted.');
-    } else {
-      // Permission denied
-      print('Location permission denied.');
-    }
-  }
-  
   void filesList() async {
     print('Files list');
     //Directory? downloadsDirectory = await getExternalStorageDirectory();
@@ -79,61 +69,13 @@ class HomePage extends StatelessWidget {
       }
     }
   }
-
-
-  void requestPermission(final BuildContext context) async {
-    PermissionStatus status = await Permission.manageExternalStorage.request();
-    if (status.isGranted) {
-      if (context.mounted) {
-        context.read<BannerBloc>().add(HideBanner());
-      }
-    }
-  }
-
-  // Future<void> requestFilesList(final BuildContext context, final String text) async {
-  //   print("requestFilesList->$text");
-  //
-  //   // context.read<BannerBloc>().add(ShowBanner());
-  //
-  //   PermissionStatus status = await Permission.manageExternalStorage.status;
-  //   if (!status.isGranted) {
-  //     //  Show banner
-  //     //@status = await Permission.manageExternalStorage.request();
-  //     if (context.mounted) {
-  //       context.read<BannerBloc>().add(ShowBanner());
-  //     }
-  //   }
-  //
-  //   if (status.isGranted) {
-  //     //_listFiles();
-  //     String folder = await _getBatteryLevel();
-  //     print ("Permission granted->$folder");
-  //   }
-  //   else {
-  //     print ("Permission denied");
-  //   }
-  // }
-
-  Future<void> requestFilesList(final BannerBloc bloc, final String text) async {
-    print("requestFilesList->$text");
-
-    // context.read<BannerBloc>().add(ShowBanner());
-
-    PermissionStatus status = await Permission.manageExternalStorage.status;
-    if (!status.isGranted) {
-      //  Show banner
-      //@status = await Permission.manageExternalStorage.request();
-        bloc.add(ShowBanner());
-     }
-
-    if (status.isGranted) {
-      //_listFiles();
-      String folder = await getExternalStoragePath();
-      print ("Permission granted->$folder");
-    }
-    else {
-      print ("Permission denied");
-    }
+  
+  void requestPermission(final BannerBloc bloc) async {
+    permissionRequestFuture.start(
+        () {},
+        () {
+          bloc.add(HideBanner());
+        } );
   }
 
   Future<String> getExternalStoragePath() async {
@@ -166,7 +108,7 @@ class HomePage extends StatelessWidget {
                 const Text('Your main content here'),
                 ElevatedButton(
                   onPressed: () {
-                    permissionFuture.start(
+                    permissionStatusFuture.start(
                           () {
                             bannerBloc.add(ShowBanner());
                           },  //  Failed
@@ -214,13 +156,13 @@ class HomePage extends StatelessWidget {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            context.read<BannerBloc>().add(HideBanner());
+                            bannerBloc.add(HideBanner());
                           },
                           child: const Text('DISMISS'),
                         ),
                         TextButton(
                           onPressed: () {
-                            requestPermission(context);
+                            requestPermission(bannerBloc);
                           },
                           child: const Text('GET ACCESS'),
                         ),
