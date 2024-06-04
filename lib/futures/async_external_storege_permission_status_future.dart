@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../interfaces/i_async_process.dart';
 
-class AsyncPermissionFuture implements IAsyncProcess {
+class AsyncPermissionStatusFuture implements IAsyncProcess {
   CancelableOperation?
       _action; // Create a CancelableOperation variable to manage cancellation.
 
   bool _isActive = false;
   bool _actionCompleted = false;
   
-  AsyncPermissionFuture();
+  AsyncPermissionStatusFuture();
 
   @override
   void start(VoidCallback? failed, [VoidCallback? success]) {

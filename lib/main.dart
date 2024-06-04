@@ -8,7 +8,7 @@ import 'banner_bloc.dart';
 import 'banner_events.dart';
 import 'banner_states.dart';
 import 'futures/async_external_storege_path_future.dart';
-import 'futures/async_external_storege_permission_future.dart';
+import 'futures/async_external_storege_permission_status_future.dart';
 
 void main() {
   runApp(const CheckPermissionApp());
@@ -37,7 +37,7 @@ class CheckPermissionApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
 
-  final AsyncPermissionFuture permissionFuture = AsyncPermissionFuture();
+  final AsyncPermissionStatusFuture permissionFuture = AsyncPermissionStatusFuture();
   final AsyncExternalPathFuture pathFuture = AsyncExternalPathFuture();
 
   final permissionExternalStorage = Permission.manageExternalStorage;
@@ -57,22 +57,7 @@ class HomePage extends StatelessWidget {
       print('Location permission denied.');
     }
   }
-
-  // void test() async {
-  //   List<Directory>? directories;
-  //   try {
-  //     directories = await getExternalStorageDirectories();
-  //   } catch (e) {
-  //     print("Could not get external storage directories: $e");
-  //   }
-  //
-  //   if (directories != null) {
-  //     for (Directory directory in directories) {
-  //       print('File  : ${directory.path}');
-  //     }
-  //   }
-  // }
-
+  
   void filesList() async {
     print('Files list');
     //Directory? downloadsDirectory = await getExternalStorageDirectory();
