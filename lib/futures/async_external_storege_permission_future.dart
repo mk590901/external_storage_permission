@@ -14,7 +14,7 @@ class AsyncPermissionFuture implements IAsyncProcess {
   AsyncPermissionFuture();
 
   @override
-  void start(VoidCallback? failed, VoidCallback? success) {
+  void start(VoidCallback? failed, [VoidCallback? success]) {
     _isActive = true;
     _actionCompleted = false;
     _process(success, failed);

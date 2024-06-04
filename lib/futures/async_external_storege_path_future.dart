@@ -14,9 +14,9 @@ class AsyncExternalPathFuture implements IAsyncProcess {
   bool _isActive = false;
   bool _actionCompleted = false;
 
-  dynamic resultPath;
-  
   AsyncExternalPathFuture();
+
+//  void greet({String name = 'Guest', int age = 18})
 
   @override
   void start(VoidCallback? failed, [VoidCallback? success, void Function(String)? aux]) {
@@ -34,10 +34,8 @@ class AsyncExternalPathFuture implements IAsyncProcess {
         debugPrint("******* Handle completion *******");
         if (path != null && path is String) {
           debugPrint("Ok->$path");
-          resultPath = path;
-          debugPrint("resultPath->$resultPath");
           success?.call();
-          aux?.call(resultPath);
+          aux?.call(path);
         }
         else {
           debugPrint("Failed");
