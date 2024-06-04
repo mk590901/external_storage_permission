@@ -13,17 +13,19 @@ class AsyncExternalPathFuture implements IAsyncProcess {
 
   bool _isActive = false;
   bool _actionCompleted = false;
+
+  dynamic resultPath;
   
   AsyncExternalPathFuture();
 
   @override
-  void start(VoidCallback? failed, VoidCallback? success) {
+  void start(VoidCallback? failed, VoidCallback? success, [void Function(String)? aux]) {
     _isActive = true;
     _actionCompleted = false;
-    _process(success, failed);
+    _process(success, failed, aux);
   }
 
-  Future<void> _process(VoidCallback? success, VoidCallback? failed) async {
+  Future<void> _process(VoidCallback? success, VoidCallback? failed, [void Function(String)? aux]) async {
     try {
       _action = CancelableOperation.fromFuture(
         platform.invokeMethod('getPublicDocumentsFolder'),
@@ -32,7 +34,10 @@ class AsyncExternalPathFuture implements IAsyncProcess {
         debugPrint("******* Handle completion *******");
         if (path != null && path is String) {
           debugPrint("Ok->$path");
+          resultPath = path;
+          debugPrint("resultPath->$resultPath");
           success?.call();
+          aux?.call(resultPath);
         }
         else {
           debugPrint("Failed");
@@ -66,4 +71,5 @@ class AsyncExternalPathFuture implements IAsyncProcess {
       cancel?.call();
     }
   }
+
 }

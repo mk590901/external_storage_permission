@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -192,6 +191,7 @@ class HomePage extends StatelessWidget {
                             pathFuture.start(
                                 () { print('!Failed!'); },
                                 () { print('!Success!'); },
+                                (text) { print('!Aux!$text'); },
                             );
                       },  //  Ok
                     );
