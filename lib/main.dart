@@ -72,8 +72,8 @@ class HomePage extends StatelessWidget {
   
   void requestPermission(final BannerBloc bloc) async {
     permissionRequestFuture.start(
-        () {},
-        () {
+        (text) {},
+        (text) {
           bloc.add(HideBanner());
         } );
   }
@@ -109,16 +109,15 @@ class HomePage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     permissionStatusFuture.start(
-                          () {
+                          (text) {
                             bannerBloc.add(ShowBanner());
                           },  //  Failed
-                          () {
+                          (text) {
                             print ("******* Permission OK *******");
                             //getExternalStoragePath();
                             pathFuture.start(
-                                () { print('!Failed!'); },
-                                null,//() { print('!Success!'); },
-                                (text) { print('!Aux!$text'); },
+                                (text) { print('!Failed!'); },
+                                (text) { print('!Success!$text'); },
                             );
                       },  //  Ok
                     );

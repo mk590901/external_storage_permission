@@ -14,13 +14,13 @@ class AsyncPermissionStatusFuture implements IAsyncProcess {
   AsyncPermissionStatusFuture();
 
   @override
-  void start(VoidCallback? failed, [VoidCallback? success]) {
+  void start(VoidCallbackParameter? failed, [VoidCallbackParameter? success]) {
     _isActive = true;
     _actionCompleted = false;
     _process(success, failed);
   }
 
-  Future<void> _process(VoidCallback? success, VoidCallback? failed) async {
+  Future<void> _process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       // Simulate a time-consuming download operation.
       _action = CancelableOperation.fromFuture(
@@ -29,10 +29,10 @@ class AsyncPermissionStatusFuture implements IAsyncProcess {
         // Handle completion
         debugPrint("******* Handle completion *******");
         if (!status.isGranted) {
-          failed?.call();
+          failed?.call("No Granted");
         }
         else {
-          success?.call();
+          success?.call("Granted");
         }
       });
 
@@ -43,7 +43,7 @@ class AsyncPermissionStatusFuture implements IAsyncProcess {
     } catch (exception) {
       // Handle exception
       debugPrint("******* exception *******");
-      failed?.call();
+      failed?.call("Exception ${exception.toString()}");
     } finally {
       _isActive = false;
       debugPrint("******* finally *******");

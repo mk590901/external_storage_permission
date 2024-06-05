@@ -16,13 +16,13 @@ class AsyncExternalPathFuture implements IAsyncProcess {
   AsyncExternalPathFuture();
 
   @override
-  void start(VoidCallback? failed, [VoidCallback? success, void Function(String)? aux]) {
+  void start(VoidCallbackParameter? failed, VoidCallbackParameter? success) {
     _isActive = true;
     _actionCompleted = false;
-    _process(success, failed, aux);
+    _process(success, failed);
   }
 
-  Future<void> _process(VoidCallback? success, VoidCallback? failed, [void Function(String)? aux]) async {
+  Future<void> _process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       _action = CancelableOperation.fromFuture(
         platform.invokeMethod('getPublicDocumentsFolder'),
@@ -31,12 +31,11 @@ class AsyncExternalPathFuture implements IAsyncProcess {
         debugPrint("******* Handle completion *******");
         if (path != null && path is String) {
           debugPrint("Ok->$path");
-          success?.call();
-          aux?.call(path);
-        }
+          success?.call(path);
+         }
         else {
           debugPrint("Failed");
-          failed?.call();
+          failed?.call('Failed to get path');
         }
       });
 
@@ -46,11 +45,11 @@ class AsyncExternalPathFuture implements IAsyncProcess {
       }
     } on PlatformException catch (exception) {
       debugPrint("******* PlatformException ${exception.toString()} *******");
-      failed?.call();
+      failed?.call("PlatformException ${exception.toString()}");
     } catch (exception) {
       // Handle exception
       debugPrint("******* exception ${exception.toString()} *******");
-      failed?.call();
+      failed?.call("Exception ${exception.toString()}");
     } finally {
       _isActive = false;
       debugPrint("******* finally *******");
