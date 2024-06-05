@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-typedef VoidCallbackParameter = void Function(String parameter);
+typedef VoidCallbackParameter = void Function(dynamic parameter);
 
 abstract class IAsyncProcess {
   void start(VoidCallbackParameter? failed, VoidCallbackParameter? success);
