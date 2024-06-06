@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../interfaces/i_async_process.dart';
 import 'basic_async_process.dart';
 
-class AsyncExternalPathFuturePure extends AsyncProcess {
+class AsyncExternalPathFuture extends AsyncProcess {
 
   static const platform = MethodChannel('com.example.myapp/channel');
 

@@ -5,36 +5,36 @@ import 'package:permission_handler/permission_handler.dart';
 import '../interfaces/i_async_process.dart';
 import 'basic_async_process.dart';
 
-class AsyncPermissionStatusFuturePure extends AsyncProcess {
+class AsyncPermissionRequestFuture extends AsyncProcess {
 
   @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       // Simulate a time-consuming download operation.
       action = CancelableOperation.fromFuture(
-        Permission.manageExternalStorage.status,
+        Permission.manageExternalStorage.request(),
       ).then((status) {
         // Handle completion
-        debugPrint("******* AsyncPermissionStatusFuture.Handle completion *******");
+        debugPrint("******* AsyncPermissionRequestFuture.Handle completion *******");
         if (!status.isGranted) {
           failed?.call("No Granted");
         }
         else {
-          success?.call("Granted");
+          success?.call("Is Granted");
         }
       });
 
       if (!action!.isCanceled) {
         actionCompleted = true;
-        debugPrint("******* AsyncPermissionStatusFuture.Completed *******");
+        debugPrint("******* AsyncPermissionRequestFuture.Completed *******");
       }
     } catch (exception) {
       // Handle exception
-      debugPrint("******* AsyncPermissionStatusFuture.exception *******");
+      debugPrint("******* AsyncPermissionRequestFuture.exception *******");
       failed?.call("Exception ${exception.toString()}");
     } finally {
       isActive = false;
-      debugPrint("******* AsyncPermissionStatusFuture.finally *******");
+      debugPrint("******* AsyncPermissionRequestFuture.finally *******");
     }
   }
 }

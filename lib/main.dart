@@ -7,9 +7,9 @@ import 'dart:async';
 import 'banner_bloc.dart';
 import 'banner_events.dart';
 import 'banner_states.dart';
-import 'futures/async_external_storage_path_future_pure.dart';
-import 'futures/async_external_storage_permission_request_future_pure.dart';
-import 'futures/async_external_storage_permission_status_future_pure.dart';
+import 'futures/async_es_path_future.dart';
+import 'futures/async_es_permission_request_future.dart';
+import 'futures/async_es_permission_status_future.dart';
 import 'futures/basic_async_process.dart';
 
 void main() {
@@ -39,9 +39,9 @@ class CheckPermissionApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
 
-  final AsyncProcess permissionStatusFuture = AsyncPermissionStatusFuturePure();
-  final AsyncProcess permissionRequestFuture = AsyncPermissionRequestFuturePure();
-  final AsyncProcess pathFuture = AsyncExternalPathFuturePure();
+  final AsyncProcess permissionStatusFuture = AsyncPermissionStatusFuture();
+  final AsyncProcess permissionRequestFuture = AsyncPermissionRequestFuture();
+  final AsyncProcess pathFuture = AsyncExternalPathFuture();
 
   final permissionExternalStorage = Permission.manageExternalStorage;
 
