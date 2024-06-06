@@ -49,6 +49,40 @@ class HomePage extends StatelessWidget {
 
   HomePage({super.key});
 
+
+ /*
+ Future<void> wrapFutureBoolWithThen() {
+  return someFutureBool().then((bool result) {
+    // Handle the boolean result
+    if (result) {
+      // Do something if true
+    } else {
+      // Do something if false
+    }
+  });
+}
+
+Future<bool> someFutureBool() async {
+  // Simulate a future returning a boolean
+  await Future.delayed(Duration(seconds: 1));
+  return true; // or false
+}
+
+
+Future<void> checkDirectoryWithThen(String path) {
+  return Directory(path).exists().then((bool exists) {
+    if (exists) {
+      print('Directory exists.');
+    } else {
+      print('Directory does not exist.');
+    }
+  });
+}
+
+
+
+  */
+
   void filesList() async {
     print('Files list');
     //Directory? downloadsDirectory = await getExternalStorageDirectory();

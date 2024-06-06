@@ -5,26 +5,45 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'package:external_storage_permission/blocs/access_events.dart';
+import 'package:external_storage_permission/blocs/access_state.dart';
+import 'package:external_storage_permission/core/basic_state_machine.dart';
+import 'package:external_storage_permission/state_machines/access_state_machine.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:external_storage_permission/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const CheckPermissionApp());
+  test('TaskStateMachine', () {
+    BasicStateMachine? stateMachine =
+      AccessStateMachine(AccessState.state_(AccessStates.idle));
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
+    stateMachine.dispatch(CheckPermission());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.status));
+    stateMachine.dispatch(NoGranted());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.ask));
+    stateMachine.dispatch(Allow());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.request));
+    stateMachine.dispatch(Granted());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.path));
+    stateMachine.dispatch(Success());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.files));
+    stateMachine.dispatch(Success());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    stateMachine.dispatch(CheckPermission());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.status));
+    stateMachine.dispatch(Granted());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.path));
+    stateMachine.dispatch(Failed());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    stateMachine.dispatch(CheckPermission());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.status));
+    stateMachine.dispatch(Granted());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.path));
+    stateMachine.dispatch(Success());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.files));
+    stateMachine.dispatch(Failed());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
   });
 }
