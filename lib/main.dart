@@ -10,6 +10,7 @@ import 'banner_states.dart';
 import 'futures/async_es_path_future.dart';
 import 'futures/async_es_permission_request_future.dart';
 import 'futures/async_es_permission_status_future.dart';
+import 'futures/async_path_exist_future.dart';
 import 'futures/basic_async_process.dart';
 
 void main() {
@@ -42,6 +43,7 @@ class HomePage extends StatelessWidget {
   final AsyncProcess permissionStatusFuture = AsyncPermissionStatusFuture();
   final AsyncProcess permissionRequestFuture = AsyncPermissionRequestFuture();
   final AsyncProcess pathFuture = AsyncExternalPathFuture();
+  final AsyncProcess pathExistFuture = AsyncPathExistFuture();
 
   final permissionExternalStorage = Permission.manageExternalStorage;
 
@@ -149,9 +151,9 @@ Future<void> checkDirectoryWithThen(String path) {
                           },  //  Failed
                           (text) {
                             print ("******* Permission OK *******");
-                            //getExternalStoragePath();
-                            pathFuture.start(
-                                (text) { print('!Failed!'); },
+                            //@pathFuture.start(
+                            pathExistFuture.start(
+                                (text) { print('!Failed !$text'); },
                                 (text) { print('!Success!$text'); },
                             );
                       },  //  Ok
