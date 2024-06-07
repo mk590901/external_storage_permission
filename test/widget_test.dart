@@ -25,6 +25,8 @@ void main() {
     stateMachine.dispatch(Granted());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.path));
     stateMachine.dispatch(Success());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.exist));
+    stateMachine.dispatch(Success());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.files));
     stateMachine.dispatch(Success());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
@@ -41,7 +43,7 @@ void main() {
     stateMachine.dispatch(Granted());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.path));
     stateMachine.dispatch(Success());
-    expect(stateMachine.state(),  AccessState.state_(AccessStates.files));
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.exist));
     stateMachine.dispatch(Failed());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
 

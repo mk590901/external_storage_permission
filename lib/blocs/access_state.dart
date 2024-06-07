@@ -4,6 +4,7 @@ enum AccessStates {
   ask,
   request,
   path,
+  exist,  //  path
   files
 }
 

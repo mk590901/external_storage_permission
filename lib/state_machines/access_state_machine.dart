@@ -22,11 +22,15 @@ class AccessStateMachine extends BasicStateMachine {
                                                                 Trans(Granted(),          AccessState.state_(AccessStates.path),    OnGranted()),
                                                               ]);
     states_ [AccessState.state_(AccessStates.path)]   = State([ Trans(Failed(),           AccessState.state_(AccessStates.idle),    OnFailed()),
+                                                                Trans(Success(),          AccessState.state_(AccessStates.exist),   OnSuccess()),
+                                                              ]);
+    states_ [AccessState.state_(AccessStates.exist)]  = State([ Trans(Failed(),           AccessState.state_(AccessStates.idle),    OnFailed()),
                                                                 Trans(Success(),          AccessState.state_(AccessStates.files),   OnSuccess()),
                                                               ]);
     states_ [AccessState.state_(AccessStates.files)]  = State([ Trans(Failed(),           AccessState.state_(AccessStates.idle),    OnFailed()),
-                                                                Trans(Success(),          AccessState.state_(AccessStates.idle),   OnSuccess()),
+                                                                Trans(Success(),          AccessState.state_(AccessStates.idle),    OnSuccess()),
     ]);
+
   }
 
   @override
