@@ -10,6 +10,7 @@ import 'banner_states.dart';
 import 'futures/async_es_path_future.dart';
 import 'futures/async_es_permission_request_future.dart';
 import 'futures/async_es_permission_status_future.dart';
+import 'futures/async_files_future.dart';
 import 'futures/async_path_exist_future.dart';
 import 'futures/basic_async_process.dart';
 
@@ -44,6 +45,7 @@ class HomePage extends StatelessWidget {
   final AsyncProcess permissionRequestFuture = AsyncPermissionRequestFuture();
   final AsyncProcess pathFuture = AsyncExternalPathFuture();
   final AsyncProcess pathExistFuture = AsyncPathExistFuture();
+  final AsyncProcess filesFuture = AsyncFilesFuture();
 
   final permissionExternalStorage = Permission.manageExternalStorage;
 
@@ -115,17 +117,17 @@ Future<void> checkDirectoryWithThen(String path) {
         } );
   }
 
-  Future<String> getExternalStoragePath() async {
-    String output;
-    try {
-      final String result = await platform.invokeMethod('getPublicDocumentsFolder');
-      output = 'getExternalStoragePath-> $result.';
-    } on PlatformException catch (e) {
-      output = "Failed getExternalStoragePath: '${e.message}'.";
-    }
-    print(output); // You can also update the UI with this value
-    return output;
-  }
+  // Future<String> getExternalStoragePath() async {
+  //   String output;
+  //   try {
+  //     final String result = await platform.invokeMethod('getPublicDocumentsFolder');
+  //     output = 'getExternalStoragePath-> $result.';
+  //   } on PlatformException catch (e) {
+  //     output = "Failed getExternalStoragePath: '${e.message}'.";
+  //   }
+  //   print(output); // You can also update the UI with this value
+  //   return output;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +154,8 @@ Future<void> checkDirectoryWithThen(String path) {
                           (text) {
                             print ("******* Permission OK *******");
                             //@pathFuture.start(
-                            pathExistFuture.start(
+                            //@pathExistFuture.start(
+                              filesFuture.start(
                                 (text) { print('!Failed !$text'); },
                                 (text) { print('!Success!$text'); },
                             );

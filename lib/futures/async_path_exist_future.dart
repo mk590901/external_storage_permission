@@ -12,7 +12,7 @@ class AsyncPathExistFuture extends AsyncProcess {
     String path = "/storage/emulated/0/Download";
     try {
       action = CancelableOperation.fromFuture(
-          Directory(path).exists(),
+          Directory(path).exists()
       ).then((exist) {
         // Handle completion
         debugPrint("******* AsyncExternalPathFuture.Handle completion *******");
