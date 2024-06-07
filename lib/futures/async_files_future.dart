@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,16 +19,19 @@ class AsyncFilesFuture extends AsyncProcess {
         if (entities != null) {
           //debugPrint("AsyncFilesFuture.Ok->$entities");
 
-          for (FileSystemEntity element in entities) {
-            if (element is File) {
-              print('File  : ${element.path}');
-            }
-            else
-            if (element is Directory) {
-              print('Folder: ${element.path}');
-            }
-          }
-          success?.call(/*entities.toString()*/"Ok");
+          // for (FileSystemEntity element in entities) {
+          //   if (element is File) {
+          //     print('File  : ${element.path}');
+          //   }
+          //   else
+          //   if (element is Directory) {
+          //     print('Folder: ${element.path}');
+          //   }
+          // }
+
+          //String json = jsonString(entities);
+
+          success?.call(entities/*Ok*/);
          }
         else {
           debugPrint("AsyncFilesFuture.Failed");
@@ -47,6 +51,22 @@ class AsyncFilesFuture extends AsyncProcess {
       isActive = false;
       debugPrint("AsyncFilesFuture.******* finally *******");
     }
+  }
+
+  String jsonString(List<FileSystemEntity> entities ) {
+    String json = "";
+    List<Map<String, dynamic>> entitiesJson = entities.map((entity) {
+      return {
+        'path': entity.path,
+        'type': entity is File
+            ? 'F'
+            : entity is Directory
+            ? 'D'
+            : 'O',
+      };
+    }).toList();
+    json = jsonEncode(entitiesJson);
+    return json;
   }
 
 

@@ -157,7 +157,22 @@ Future<void> checkDirectoryWithThen(String path) {
                             //@pathExistFuture.start(
                               filesFuture.start(
                                 (text) { print('!Failed !$text'); },
-                                (text) { print('!Success!$text'); },
+                                (entries) {
+                                  if (entries is List<FileSystemEntity>) {
+                                    for (FileSystemEntity element in entries) {
+                                      if (element is File) {
+                                        print('F: ${element.path}');
+                                      }
+                                      else
+                                      if (element is Directory) {
+                                        print('D: ${element.path}');
+                                      }
+                                    }
+                                  }
+                                  else {
+                                    print('!Success!$entries');
+                                  }
+                               },
                             );
                       },  //  Ok
                     );
