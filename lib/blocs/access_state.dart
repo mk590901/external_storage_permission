@@ -5,7 +5,8 @@ enum AccessStates {
   request,
   path,
   exist,  //  path
-  files
+  files,
+  rendering
 }
 
 class AccessState<T> {
@@ -24,7 +25,7 @@ class AccessState<T> {
   AccessStates state() {
     return _state;
   }
-  
+
   void setData(T? data) {
     _data = data;
   }

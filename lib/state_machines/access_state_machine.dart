@@ -28,9 +28,9 @@ class AccessStateMachine extends BasicStateMachine {
                                                                 Trans(Success(),          AccessState.state_(AccessStates.files),   OnSuccess()),
                                                               ]);
     states_ [AccessState.state_(AccessStates.files)]  = State([ Trans(Failed(),           AccessState.state_(AccessStates.idle),    OnFailed()),
-                                                                Trans(Success(),          AccessState.state_(AccessStates.idle),    OnSuccess()),
-    ]);
-
+                                                                Trans(Success(),          AccessState.state_(AccessStates.rendering), OnSuccess()),
+                                                              ]);
+    states_ [AccessState.state_(AccessStates.rendering)]  = State([ Trans(Success(),      AccessState.state_(AccessStates.idle),    OnSuccess())]);
   }
 
   @override

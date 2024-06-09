@@ -29,6 +29,8 @@ void main() {
     stateMachine.dispatch(Success());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.files));
     stateMachine.dispatch(Success());
+    expect(stateMachine.state(),  AccessState.state_(AccessStates.rendering));
+    stateMachine.dispatch(Success());
     expect(stateMachine.state(),  AccessState.state_(AccessStates.idle));
 
     stateMachine.dispatch(CheckPermission());
