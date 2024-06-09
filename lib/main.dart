@@ -83,10 +83,6 @@ Future<void> checkDirectoryWithThen(String path) {
   });
 }
 
-
-
-  */
-
   void filesList() async {
     print('Files list');
     //Directory? downloadsDirectory = await getExternalStorageDirectory();
@@ -108,26 +104,17 @@ Future<void> checkDirectoryWithThen(String path) {
       }
     }
   }
-  
+  */
   void requestPermission(final BannerBloc bloc) async {
     permissionRequestFuture.start(
-        (text) {},
         (text) {
+          print('permissionRequestFuture.Failed: $text');
+        },
+        (text) {
+          print('permissionRequestFuture.Success: $text');
           bloc.add(HideBanner());
         } );
   }
-
-  // Future<String> getExternalStoragePath() async {
-  //   String output;
-  //   try {
-  //     final String result = await platform.invokeMethod('getPublicDocumentsFolder');
-  //     output = 'getExternalStoragePath-> $result.';
-  //   } on PlatformException catch (e) {
-  //     output = "Failed getExternalStoragePath: '${e.message}'.";
-  //   }
-  //   print(output); // You can also update the UI with this value
-  //   return output;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -149,31 +136,38 @@ Future<void> checkDirectoryWithThen(String path) {
                   onPressed: () {
                     permissionStatusFuture.start(
                           (text) {
+                            print ("permissionStatusFuture.Failed $text");
                             bannerBloc.add(ShowBanner());
                           },  //  Failed
                           (text) {
-                            print ("******* Permission OK *******");
-                            //@pathFuture.start(
-                            //@pathExistFuture.start(
-                              filesFuture.start(
-                                (text) { print('!Failed !$text'); },
-                                (entries) {
-                                  if (entries is List<FileSystemEntity>) {
-                                    for (FileSystemEntity element in entries) {
-                                      if (element is File) {
-                                        print('F: ${element.path}');
-                                      }
-                                      else
-                                      if (element is Directory) {
-                                        print('D: ${element.path}');
-                                      }
-                                    }
-                                  }
-                                  else {
-                                    print('!Success!$entries');
-                                  }
-                               },
+                            print ("permissionStatusFuture.Success $text");
+                            pathFuture.start(
+                                  (text) { print('!pathFuture.Failed !$text'); },
+                                  (entries) { print('!pathFuture.Success !$entries');},
                             );
+
+                                //@pathExistFuture.start(
+
+                            //   filesFuture.start(
+                            //     (text) { print('!Failed !$text'); },
+                            //     (entries) {
+                            //       if (entries is List<FileSystemEntity>) {
+                            //         for (FileSystemEntity element in entries) {
+                            //           if (element is File) {
+                            //             print('F: ${element.path}');
+                            //           }
+                            //           else
+                            //           if (element is Directory) {
+                            //             print('D: ${element.path}');
+                            //           }
+                            //         }
+                            //       }
+                            //       else {
+                            //         print('!Success!$entries');
+                            //       }
+                            //    },
+                            // );
+
                       },  //  Ok
                     );
                   },
