@@ -12,6 +12,7 @@ class OnCheckPermission implements ITransitionMethod {
   @override
   void execute([var data]) {
     print("@OnCheckPermission $data");
+    data?.call();
   }
 }
 

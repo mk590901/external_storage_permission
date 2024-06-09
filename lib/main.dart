@@ -7,6 +7,10 @@ import 'dart:async';
 import 'banner_bloc.dart';
 import 'banner_events.dart';
 import 'banner_states.dart';
+import 'blocs/access_bloc.dart';
+import 'blocs/access_events.dart';
+import 'blocs/access_state.dart';
+import 'core/event.dart';
 import 'futures/async_es_path_future.dart';
 import 'futures/async_es_permission_request_future.dart';
 import 'futures/async_es_permission_status_future.dart';
@@ -32,7 +36,8 @@ class CheckPermissionApp extends StatelessWidget {
       ),
       home: //const HomePage(),
       BlocProvider(
-        create: (context) => BannerBloc(),
+//        create: (context) => BannerBloc(),
+        create: (context) => AccessBloc(AccessState(AccessStates.idle)),
         child: HomePage(),
       ),
     );
@@ -116,6 +121,138 @@ Future<void> checkDirectoryWithThen(String path) {
         } );
   }
 
+  void requestPermission2(final AccessBloc accessBloc) async {
+    permissionRequestFuture.start(
+            (text) {
+          print('permissionRequestFuture.Failed: $text');
+        },
+            (text) {
+          print('permissionRequestFuture.Success: $text');
+          accessBloc.add(Allow());
+        } );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final accessBloc = BlocProvider.of<AccessBloc>(context);
+
+    Event getEvent(AccessStates state) {
+      if (state == AccessStates.idle) {
+        return CheckPermission(() {
+          permissionStatusFuture.start(
+                (text) {
+                  debugPrint('CheckPermission.Failed');
+                  accessBloc.add(NoGranted());
+                },  //  Failed
+                (text) {
+                  debugPrint('Success');
+                  accessBloc.add(Granted());
+                },  //  Success
+          );
+        });
+      }
+      else
+      if (state == AccessStates.status) {
+        debugPrint('state->$state');
+      }
+      return Cancel();
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Material Banner with BLoC')),
+      body: BlocBuilder<AccessBloc, AccessState>(
+        builder: (context, state) {
+      if (state.state() == AccessStates.ask) {
+        print ('MATERIAL BANNER');
+        //return const SizedBox.shrink();
+
+        return Center(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.all(1),
+            decoration: BoxDecoration(
+              color: Colors.blueGrey,
+              borderRadius: BorderRadius.circular(1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: MaterialBanner(
+              content: const Text(
+                'To read and save data, you must allow the application access to the public folders of device.',
+                style: TextStyle(color: Colors.blueGrey),),
+              leading: const Icon(Icons.warning_amber, size: 32, color: Colors.blueGrey),
+              backgroundColor: Colors.grey[350],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    accessBloc.add(Dismiss());
+                  },
+                  child: const Text('DISMISS'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    requestPermission2(accessBloc);
+                  },
+                  child: const Text('GET ACCESS'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      else {
+        return Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Context: ${state.state()}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      accessBloc.add(getEvent(state.state()));
+                    },
+                    child: Text(getText(state.state())),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+        }
+        },
+      ),
+    );
+  }
+
+
+  String getText(AccessStates state) {
+    if (state == AccessStates.idle) {
+      return 'Check permission';
+    }
+    else
+    if (state == AccessStates.status) {
+      return 'Check status';
+    }
+    else
+    if (state == AccessStates.ask) {
+      return 'Show banner';
+    }
+
+    return 'Unknown';
+  }
+
+/*
   @override
   Widget build(BuildContext context) {
 
@@ -227,38 +364,5 @@ Future<void> checkDirectoryWithThen(String path) {
       ),
     );
   }
-
-
-/*
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Check Permission Demo'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // ElevatedButton(
-            //   onPressed: externalStoragePermissionStatus,
-            //   child: const Text('Check permission'),
-            // ),
-            //
-            // ElevatedButton(
-            //   onPressed: filesList,//filesList,
-            //   child: const Text('Files list'),
-            // ),
-
-            ElevatedButton(
-              onPressed: () { requestFilesList("Downloads"); }, //filesList,
-              child: const Text('Get Files List'),
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-   */
+*/
 }
