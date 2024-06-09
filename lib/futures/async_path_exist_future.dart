@@ -7,9 +7,18 @@ import '../interfaces/i_async_process.dart';
 import 'basic_async_process.dart';
 
 class AsyncPathExistFuture extends AsyncProcess {
+
+  late String _path;
+
+  @override
+  void setParameter(final dynamic path) {
+    _path = path;
+  }
+
   @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
-    String path = "/storage/emulated/0/Download";
+    //@String path = "/storage/emulated/0/Download";
+    String path = _path;
     try {
       action = CancelableOperation.fromFuture(
           Directory(path).exists()

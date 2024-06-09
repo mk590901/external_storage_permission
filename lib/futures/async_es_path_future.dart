@@ -10,6 +10,9 @@ class AsyncExternalPathFuture extends AsyncProcess {
   static const platform = MethodChannel('com.example.myapp/channel');
 
   @override
+  void setParameter(final dynamic parameter) {}
+
+  @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       action = CancelableOperation.fromFuture(

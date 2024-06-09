@@ -24,6 +24,8 @@ abstract class AsyncProcess implements IAsyncProcess {
     }
   }
 
+  void setParameter(final dynamic parameter);
+
   Future<void>  process(VoidCallbackParameter? success, VoidCallbackParameter? failed); //  abstract function
 
 

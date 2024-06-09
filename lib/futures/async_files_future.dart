@@ -7,9 +7,18 @@ import '../interfaces/i_async_process.dart';
 import 'basic_async_process.dart';
 
 class AsyncFilesFuture extends AsyncProcess {
+
+  late String _path;
+
+  @override
+  void setParameter(final dynamic parameter) {
+    _path = parameter;
+  }
+
   @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
-    String path = "/storage/emulated/0/Download";
+    //@String path = "/storage/emulated/0/Download";
+    String path = _path;
     try {
       action = CancelableOperation.fromFuture(
           Directory(path).list(recursive: true, followLinks: false).toList()
@@ -31,7 +40,7 @@ class AsyncFilesFuture extends AsyncProcess {
 
           //String json = jsonString(entities);
 
-          success?.call(entities/*Ok*/);
+          success?.call(entities);
          }
         else {
           debugPrint("AsyncFilesFuture.Failed");

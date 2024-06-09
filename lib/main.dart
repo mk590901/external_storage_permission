@@ -54,10 +54,20 @@ class HomePage extends StatelessWidget {
 
   final permissionExternalStorage = Permission.manageExternalStorage;
 
-  static const platform = MethodChannel('com.example.myapp/channel');
+  //static const platform = MethodChannel('com.example.myapp/channel');
+
+  late String? _path;
 
   HomePage({super.key});
 
+
+  void setPath(final String path) {
+    _path = path;
+  }
+
+  String? getPath() {
+    return _path;
+  }
 
  /*
  Future<void> wrapFutureBoolWithThen() {
@@ -132,7 +142,6 @@ Future<void> checkDirectoryWithThen(String path) {
         } );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final accessBloc = BlocProvider.of<AccessBloc>(context);
@@ -146,8 +155,59 @@ Future<void> checkDirectoryWithThen(String path) {
                   accessBloc.add(NoGranted());
                 },  //  Failed
                 (text) {
-                  debugPrint('Success');
-                  accessBloc.add(Granted());
+                  debugPrint('CheckPermission.Success');
+                  accessBloc.add(Granted(() {
+                  //  Request path -> get path name
+                    pathFuture.start(
+                          (text) {
+                            debugPrint('!pathFuture.Failed !$text');
+                            accessBloc.add(Failed());
+                          },
+                          (entries) {
+                            debugPrint('!pathFuture.Success !$entries');
+                            pathExistFuture.setParameter(entries);
+                            filesFuture.setParameter(entries);
+                            accessBloc.add(Success(() {
+                              pathExistFuture.start(
+                                  (text) {
+                                    debugPrint('!pathExistFuture.Failed !$text');
+                                    accessBloc.add(Failed());
+                                  },  //  Failed
+                                  (text) {
+                                    debugPrint('!pathExistFuture.success !$text');
+                                    accessBloc.add(Success(() {
+                                        filesFuture.start(
+                                          (text) {
+                                            debugPrint('!Failed !$text');
+                                            accessBloc.add(Failed());
+                                          },
+                                          (entries) {
+                                            if (entries is List<FileSystemEntity>) {
+                                              for (FileSystemEntity element in entries) {
+                                                if (element is File) {
+                                                  print('F: ${element.path}');
+                                                }
+                                                else
+                                                if (element is Directory) {
+                                                  print('D: ${element.path}');
+                                                }
+                                              }
+                                            }
+                                            else {
+                                              print('!Success!$entries');
+                                            }
+                                            accessBloc.add(Success());
+                                         },
+                                      );
+                                    }
+                                    ));
+                                  },  //  Success
+                              );
+                            }
+                            ));
+                          },
+                    );
+                  } ));
                 },  //  Success
           );
         });
@@ -155,6 +215,11 @@ Future<void> checkDirectoryWithThen(String path) {
       else
       if (state == AccessStates.status) {
         debugPrint('state->$state');
+      }
+      else
+      if (state == AccessStates.rendering) {
+        debugPrint('state->$state');
+        return Success();
       }
       return Cancel();
     }
@@ -235,7 +300,6 @@ Future<void> checkDirectoryWithThen(String path) {
     );
   }
 
-
   String getText(AccessStates state) {
     if (state == AccessStates.idle) {
       return 'Check permission';
@@ -247,6 +311,22 @@ Future<void> checkDirectoryWithThen(String path) {
     else
     if (state == AccessStates.ask) {
       return 'Show banner';
+    }
+    else
+    if (state == AccessStates.path) {
+      return 'Get path name';
+    }
+    else
+    if (state == AccessStates.exist) {
+      return 'Check permission existence';
+    }
+    else
+    if (state == AccessStates.files) {
+      return 'Get files';
+    }
+    else
+    if (state == AccessStates.rendering) {
+      return 'Rendering';
     }
 
     return 'Unknown';

@@ -1,4 +1,3 @@
-
 import '../../core/interfaces/i_transition_method.dart';
 
 class OnNothing implements ITransitionMethod {
@@ -20,6 +19,7 @@ class OnGranted implements ITransitionMethod {
   @override
   void execute([var data]) {
     print("@OnGranted $data");
+    data?.call();
   }
 }
 
@@ -55,6 +55,7 @@ class OnSuccess implements ITransitionMethod {
   @override
   void execute([var data]) {
     print("@OnSuccess $data");
+    data?.call();
   }
 }
 

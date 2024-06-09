@@ -8,6 +8,9 @@ import 'basic_async_process.dart';
 class AsyncPermissionRequestFuture extends AsyncProcess {
 
   @override
+  void setParameter(final dynamic parameter) {}
+
+  @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       // Simulate a time-consuming download operation.
