@@ -28,8 +28,7 @@ class CheckPermissionApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:
-      BlocProvider(
+      home: BlocProvider(
         create: (context) => AccessBloc(AccessState(AccessStates.idle)),
         child: HomePage(),
       ),
@@ -38,7 +37,6 @@ class CheckPermissionApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-
   final AsyncProcess permissionStatusFuture = AsyncPermissionStatusFuture();
   final AsyncProcess permissionRequestFuture = AsyncPermissionRequestFuture();
   final AsyncProcess pathFuture = AsyncExternalPathFuture();
@@ -124,23 +122,19 @@ class HomePage extends StatelessWidget {
       if (state == AccessStates.idle) {
         return CheckPermission(() {
           permissionStatusFuture.start(
-                (text) {
-                  debugPrint('CheckPermission.Failed');
-                  accessBloc.add(NoGranted());
-                },  //  Failed
-                (text) {
-                  debugPrint('CheckPermission.Success');
-                  processGrantedPermission(accessBloc);
-                },  //  Success
+            (text) {
+              debugPrint('CheckPermission.Failed');
+              accessBloc.add(NoGranted());
+            }, //  Failed
+            (text) {
+              debugPrint('CheckPermission.Success');
+              processGrantedPermission(accessBloc);
+            }, //  Success
           );
         });
-      }
-      else
-      if (state == AccessStates.status) {
+      } else if (state == AccessStates.status) {
         debugPrint('state->$state');
-      }
-      else
-      if (state == AccessStates.rendering) {
+      } else if (state == AccessStates.rendering) {
         debugPrint('state->$state');
         return Success();
       }
@@ -148,8 +142,9 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Public External Storage Content',
-          style: buildTitleTextStyle()),
+      appBar: AppBar(
+        title: Text('Public External Storage Content',
+            style: buildTitleTextStyle()),
         leading: IconButton(
           icon: const Icon(Icons.security_sharp, color: Colors.white),
           // Icon widget
@@ -157,97 +152,97 @@ class HomePage extends StatelessWidget {
             // Add your onPressed logic here
           },
         ),
-        backgroundColor: Colors.lightBlue, ),
+        backgroundColor: Colors.lightBlue,
+      ),
       body: BlocBuilder<AccessBloc, AccessState>(
         builder: (context, state) {
-      if (state.state() == AccessStates.rendering) {
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: buildListWithDividers(items),
-          ),
-        );
-      }
-      else
-      if (state.state() == AccessStates.ask) {
-        debugPrint ('MATERIAL BANNER');
-        return Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            padding: const EdgeInsets.all(1),
-            decoration: BoxDecoration(
-              color: Colors.blueGrey,
-              borderRadius: BorderRadius.circular(1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: MaterialBanner(
-              content: const Text(
-                'To read and save data, you must allow the application access to the public folders of device.',
-                style: TextStyle(color: Colors.blueGrey),),
-              leading: const Icon(Icons.warning_amber, size: 32, color: Colors.blueGrey),
-              backgroundColor: Colors.grey[350],
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    accessBloc.add(Dismiss());
-                  },
-                  child: const Text('DISMISS'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    processRequestPermission(accessBloc);
-                  },
-                  child: const Text('GET ACCESS'),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      else {
-        return Stack(
-          children: [
-            Center(
+          if (state.state() == AccessStates.rendering) {
+            return SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'State: ${state.state()}',
-                    style: buildTextStyle(),
-                  ),
-                ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: buildListWithDividers(items),
               ),
-            ),
-          ],
-        );
-        }
+            );
+          } else if (state.state() == AccessStates.ask) {
+            debugPrint('MATERIAL BANNER');
+            return Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.all(1),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey,
+                  borderRadius: BorderRadius.circular(1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: MaterialBanner(
+                  content: const Text(
+                    'To read and save data, you must allow the application access to the public folders of device.',
+                    style: TextStyle(color: Colors.blueGrey),
+                  ),
+                  leading: const Icon(Icons.warning_amber,
+                      size: 32, color: Colors.blueGrey),
+                  backgroundColor: Colors.grey[350],
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        accessBloc.add(Dismiss());
+                      },
+                      child: const Text('DISMISS'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        processRequestPermission(accessBloc);
+                      },
+                      child: const Text('GET ACCESS'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return Stack(
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'State: ${state.state()}',
+                        style: buildTextStyle(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
         },
       ),
-
-        floatingActionButton: BlocBuilder<AccessBloc, AccessState>(
-            builder: (context, state) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                FloatingActionButton(
-                    onPressed: () {
-                      accessBloc.add(getEvent(state.state()));
-                    },
-                    backgroundColor: Colors.blue,
-                    child: Icon(getIcon(state.state()),
-                      size: 32, color: Colors.white,
+      floatingActionButton:
+          BlocBuilder<AccessBloc, AccessState>(builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+                onPressed: () {
+                  accessBloc.add(getEvent(state.state()));
+                },
+                backgroundColor: Colors.blue,
+                child: Icon(
+                  getIcon(state.state()),
+                  size: 32,
+                  color: Colors.white,
                 )),
-                  ],
-              );
-            }),
-
+          ],
+        );
+      }),
     );
   }
 
@@ -282,7 +277,9 @@ class HomePage extends StatelessWidget {
   }
 
   IconData? getIcon(AccessStates state) {
-    return (state == AccessStates.rendering) ? Icons.refresh_sharp : Icons.folder_outlined;
+    return (state == AccessStates.rendering)
+        ? Icons.refresh_sharp
+        : Icons.folder_outlined;
   }
 
   List<Widget> buildListWithDividers(List<String> items) {
