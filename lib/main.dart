@@ -133,12 +133,74 @@ Future<void> checkDirectoryWithThen(String path) {
 
   void requestPermission2(final AccessBloc accessBloc) async {
     permissionRequestFuture.start(
-            (text) {
+          (text) {
           print('permissionRequestFuture.Failed: $text');
+          accessBloc.add(Dismiss()/*NoGranted()*/);
         },
-            (text) {
+          (text) {
           print('permissionRequestFuture.Success: $text');
-          accessBloc.add(Allow());
+          accessBloc.add(/*Granted*/Allow(
+        //  Request path
+              () {
+                //accessBloc.add(Granted(
+                //));
+
+                accessBloc.add(Granted(() {
+                  //  Request path -> get path name
+                  pathFuture.start(
+                        (text) {
+                      debugPrint('!pathFuture.Failed !$text');
+                      accessBloc.add(Failed());
+                    },
+                        (entries) {
+                      debugPrint('!pathFuture.Success !$entries');
+                      pathExistFuture.setParameter(entries);
+                      filesFuture.setParameter(entries);
+                      accessBloc.add(Success(() {
+                        pathExistFuture.start(
+                              (text) {
+                            debugPrint('!pathExistFuture.Failed !$text');
+                            accessBloc.add(Failed());
+                          },  //  Failed
+                              (text) {
+                            debugPrint('!pathExistFuture.success !$text');
+                            accessBloc.add(Success(() {
+                              filesFuture.start(
+                                    (text) {
+                                  debugPrint('!Failed !$text');
+                                  accessBloc.add(Failed());
+                                },
+                                    (entries) {
+                                  if (entries is List<FileSystemEntity>) {
+                                    for (FileSystemEntity element in entries) {
+                                      if (element is File) {
+                                        print('F: ${element.path}');
+                                      }
+                                      else
+                                      if (element is Directory) {
+                                        print('D: ${element.path}');
+                                      }
+                                    }
+                                  }
+                                  else {
+                                    print('!Success!$entries');
+                                  }
+                                  accessBloc.add(Success());
+                                },
+                              );
+                            }
+                            ));
+                          },  //  Success
+                        );
+                      }
+                      ));
+                    },
+                  );
+                }));
+
+
+              }
+          ));
         } );
   }
 
@@ -156,6 +218,7 @@ Future<void> checkDirectoryWithThen(String path) {
                 },  //  Failed
                 (text) {
                   debugPrint('CheckPermission.Success');
+
                   accessBloc.add(Granted(() {
                   //  Request path -> get path name
                     pathFuture.start(
@@ -207,7 +270,9 @@ Future<void> checkDirectoryWithThen(String path) {
                             ));
                           },
                     );
-                  } ));
+                  }));
+
+
                 },  //  Success
           );
         });
@@ -327,6 +392,10 @@ Future<void> checkDirectoryWithThen(String path) {
     else
     if (state == AccessStates.rendering) {
       return 'Rendering';
+    }
+    else
+    if (state == AccessStates.request) {
+      return 'Request Path';
     }
 
     return 'Unknown';

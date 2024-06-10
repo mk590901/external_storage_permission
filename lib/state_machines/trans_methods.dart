@@ -41,6 +41,7 @@ class OnAllow implements ITransitionMethod {
   @override
   void execute([var data]) {
     print("@OnAllow $data");
+    data?.call();
   }
 }
 
