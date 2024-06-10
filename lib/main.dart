@@ -313,8 +313,30 @@ Future<void> checkDirectoryWithThen(String path) {
         }
         },
       ),
+
+        floatingActionButton: BlocBuilder<AccessBloc, AccessState>(
+            builder: (context, state) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                FloatingActionButton(
+                    onPressed: () {
+                      accessBloc.add(getEvent(state.state()));
+                    },
+                  child: Icon(getIcon(state.state()),
+                      size: 32, color: Colors.blue,
+                )),
+                  ],
+              );
+            }),
+
     );
   }
+
+  IconData? getIcon(AccessStates state) {
+    return (state == AccessStates.rendering) ? Icons.refresh_sharp : Icons.folder_outlined;
+  }
+
 
   String getText(AccessStates state) {
     if (state == AccessStates.idle) {
