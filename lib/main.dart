@@ -92,10 +92,10 @@ class HomePage extends StatelessWidget {
                         items.clear();
                         for (FileSystemEntity element in entries) {
                           if (element is File) {
-                            debugPrint('F: ${element.path}');
+                            //debugPrint('F: ${element.path}');
                             items.add('F: ${element.path}');
                           } else if (element is Directory) {
-                            debugPrint('D: ${element.path}');
+                            //debugPrint('D: ${element.path}');
                             items.add('D: ${element.path}');
                           }
                         }
@@ -204,6 +204,27 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            );
+          } else if (state.state() == AccessStates.files) {
+            return Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const SizedBox(
+                    width: 256.0,
+                    height: 256.0,
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.grey,
+                      strokeWidth: 16,
+                    ),
+                  ),
+                  Text(
+                    'Task in progress...\nPlease wait',
+                    textAlign: TextAlign.center,
+                    style: buildTextStyle(),
+                  ),
+                ],
               ),
             );
           } else {

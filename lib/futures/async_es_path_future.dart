@@ -16,8 +16,8 @@ class AsyncExternalPathFuture extends AsyncProcess {
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       action = CancelableOperation.fromFuture(
-        //platform.invokeMethod('getPublicDocumentsFolder'),
-        platform.invokeMethod('getPublicDownloadsFolder'),
+        platform.invokeMethod('getPublicDocumentsFolder'),
+        //platform.invokeMethod('getPublicDownloadsFolder'),
       ).then((path) {
         // Handle completion
         debugPrint("******* AsyncExternalPathFuture.Handle completion *******");
