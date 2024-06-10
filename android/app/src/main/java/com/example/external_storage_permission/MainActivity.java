@@ -26,6 +26,11 @@ public class MainActivity extends FlutterActivity {
                                 String folder = getPublicDocumentsFolder();
                                 result.success(folder);
                             }
+                            else
+                            if (call.method.equals("getPublicDownloadsFolder"))  {
+                                String folder = getPublicDownloadsFolder();
+                                result.success(folder);
+                            }
                             else {
                                 result.notImplemented();
                             }
@@ -33,16 +38,15 @@ public class MainActivity extends FlutterActivity {
                 );
     }
 
-//    private int getBatteryLevel() {
-//        BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-//            return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-//        }
-//        return -1;
-//    }
-
     private String getPublicDocumentsFolder() {
         File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        String folderName = folder.getAbsolutePath();
+        Log.d(TAG, "Downloads: " + folderName);
+        return folderName;
+    }
+
+    private String getPublicDownloadsFolder() {
+        File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         String folderName = folder.getAbsolutePath();
         Log.d(TAG, "Downloads: " + folderName);
         return folderName;
