@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
-//import 'banner_bloc.dart';
-//import 'banner_events.dart';
 import 'blocs/access_bloc.dart';
 import 'blocs/access_events.dart';
 import 'blocs/access_state.dart';
@@ -32,9 +28,8 @@ class CheckPermissionApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: //const HomePage(),
+      home:
       BlocProvider(
-//        create: (context) => BannerBloc(),
         create: (context) => AccessBloc(AccessState(AccessStates.idle)),
         child: HomePage(),
       ),
@@ -50,83 +45,9 @@ class HomePage extends StatelessWidget {
   final AsyncProcess pathExistFuture = AsyncPathExistFuture();
   final AsyncProcess filesFuture = AsyncFilesFuture();
 
-  //final permissionExternalStorage = Permission.manageExternalStorage;
-
-  late String? _path;
   late List<String> items = [];
 
   HomePage({super.key});
-
-  void setPath(final String path) {
-    _path = path;
-  }
-
-  String? getPath() {
-    return _path;
-  }
-
- /*
- Future<void> wrapFutureBoolWithThen() {
-  return someFutureBool().then((bool result) {
-    // Handle the boolean result
-    if (result) {
-      // Do something if true
-    } else {
-      // Do something if false
-    }
-  });
-}
-
-Future<bool> someFutureBool() async {
-  // Simulate a future returning a boolean
-  await Future.delayed(Duration(seconds: 1));
-  return true; // or false
-}
-
-
-Future<void> checkDirectoryWithThen(String path) {
-  return Directory(path).exists().then((bool exists) {
-    if (exists) {
-      print('Directory exists.');
-    } else {
-      print('Directory does not exist.');
-    }
-  });
-}
-
-  void filesList() async {
-    print('Files list');
-    //Directory? downloadsDirectory = await getExternalStorageDirectory();
-    // String? path = downloadsDirectory?.path;
-    String path = "/storage/emulated/0/Download";
-    print ('PATH->$path');
-    final directory = Directory(path);
-    if (await directory.exists()) {
-      print ('PATH->$path exist');
-      final List<FileSystemEntity> entities = directory.listSync(recursive: true, followLinks: false);
-      for (FileSystemEntity element in entities) {
-        if (element is File) {
-          print('File  : ${element.path}');
-        }
-        else
-        if (element is Directory) {
-          print('Folder: ${element.path}');
-        }
-      }
-    }
-  }
-
-  void requestPermission(final BannerBloc bloc) async {
-    permissionRequestFuture.start(
-        (text) {
-          print('permissionRequestFuture.Failed: $text');
-        },
-        (text) {
-          print('permissionRequestFuture.Success: $text');
-          bloc.add(HideBanner());
-        } );
-  }
-  */
 
   void processRequestPermission(final AccessBloc accessBloc) async {
     permissionRequestFuture.start((text) {
@@ -227,21 +148,23 @@ Future<void> checkDirectoryWithThen(String path) {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Material Banner with BLoC')),
+      appBar: AppBar(title: Text('Public External Storage Content',
+          style: buildTitleTextStyle()),
+        leading: IconButton(
+          icon: const Icon(Icons.security_sharp, color: Colors.white),
+          // Icon widget
+          onPressed: () {
+            // Add your onPressed logic here
+          },
+        ),
+        backgroundColor: Colors.lightBlue, ),
       body: BlocBuilder<AccessBloc, AccessState>(
         builder: (context, state) {
       if (state.state() == AccessStates.rendering) {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-
-            // children: items.map((item) => Padding(
-            //   padding: const EdgeInsets.only(left: 16, right: 16, top: 1), //.all(1.0),
-            //   child: Text(item, style: const TextStyle(fontSize: 12)),
-            // )).toList(),
-
             children: buildListWithDividers(items),
-
           ),
         );
       }
@@ -296,14 +219,8 @@ Future<void> checkDirectoryWithThen(String path) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Context: ${state.state()}',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      accessBloc.add(getEvent(state.state()));
-                    },
-                    child: Text(getText(state.state())),
+                    'State: ${state.state()}',
+                    style: buildTextStyle(),
                   ),
                 ],
               ),
@@ -323,8 +240,9 @@ Future<void> checkDirectoryWithThen(String path) {
                     onPressed: () {
                       accessBloc.add(getEvent(state.state()));
                     },
-                  child: Icon(getIcon(state.state()),
-                      size: 32, color: Colors.blue,
+                    backgroundColor: Colors.blue,
+                    child: Icon(getIcon(state.state()),
+                      size: 32, color: Colors.white,
                 )),
                   ],
               );
@@ -333,45 +251,38 @@ Future<void> checkDirectoryWithThen(String path) {
     );
   }
 
-  IconData? getIcon(AccessStates state) {
-    return (state == AccessStates.rendering) ? Icons.refresh_sharp : Icons.folder_outlined;
+  TextStyle buildTitleTextStyle() {
+    return const TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontStyle: FontStyle.italic,
+      shadows: [
+        Shadow(
+          blurRadius: 8.0,
+          color: Colors.indigo,
+          offset: Offset(3.0, 3.0),
+        ),
+      ],
+    );
   }
 
+  TextStyle buildTextStyle() {
+    return const TextStyle(
+      color: Colors.lightBlue,
+      fontSize: 18,
+      fontStyle: FontStyle.normal,
+      shadows: [
+        Shadow(
+          blurRadius: 4.0,
+          color: Colors.black12,
+          offset: Offset(2.0, 2.0),
+        ),
+      ],
+    );
+  }
 
-  String getText(AccessStates state) {
-    if (state == AccessStates.idle) {
-      return 'Check permission';
-    }
-    else
-    if (state == AccessStates.status) {
-      return 'Check status';
-    }
-    else
-    if (state == AccessStates.ask) {
-      return 'Show banner';
-    }
-    else
-    if (state == AccessStates.path) {
-      return 'Get path name';
-    }
-    else
-    if (state == AccessStates.exist) {
-      return 'Check permission existence';
-    }
-    else
-    if (state == AccessStates.files) {
-      return 'Get files';
-    }
-    else
-    if (state == AccessStates.rendering) {
-      return 'Rendering';
-    }
-    else
-    if (state == AccessStates.request) {
-      return 'Request Path';
-    }
-
-    return 'Unknown';
+  IconData? getIcon(AccessStates state) {
+    return (state == AccessStates.rendering) ? Icons.refresh_sharp : Icons.folder_outlined;
   }
 
   List<Widget> buildListWithDividers(List<String> items) {
@@ -390,118 +301,4 @@ Future<void> checkDirectoryWithThen(String path) {
     }
     return widgets;
   }
-
-/*
-  @override
-  Widget build(BuildContext context) {
-
-    final bannerBloc = BlocProvider.of<BannerBloc>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Material Banner with BLoC'),
-      ),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Your main content here'),
-                ElevatedButton(
-                  onPressed: () {
-                    permissionStatusFuture.start(
-                          (text) {
-                            print ("permissionStatusFuture.Failed $text");
-                            bannerBloc.add(ShowBanner());
-                          },  //  Failed
-                          (text) {
-                            print ("permissionStatusFuture.Success $text");
-                            pathFuture.start(
-                                  (text) { print('!pathFuture.Failed !$text'); },
-                                  (entries) { print('!pathFuture.Success !$entries');},
-                            );
-
-                                //@pathExistFuture.start(
-
-                            //   filesFuture.start(
-                            //     (text) { print('!Failed !$text'); },
-                            //     (entries) {
-                            //       if (entries is List<FileSystemEntity>) {
-                            //         for (FileSystemEntity element in entries) {
-                            //           if (element is File) {
-                            //             print('F: ${element.path}');
-                            //           }
-                            //           else
-                            //           if (element is Directory) {
-                            //             print('D: ${element.path}');
-                            //           }
-                            //         }
-                            //       }
-                            //       else {
-                            //         print('!Success!$entries');
-                            //       }
-                            //    },
-                            // );
-
-                      },  //  Ok
-                    );
-                  },
-                  child: const Text('Get Files List'),
-                ),
-              ],
-            ),
-          ),
-          BlocBuilder<BannerBloc, BannerState>(
-            builder: (context, state) {
-              if (state is BannerVisible) {
-                return Center(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey,
-                      borderRadius: BorderRadius.circular(1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: MaterialBanner(
-                      content: const Text(
-                        'To read and save data, you must allow the application access to the public folders of device.',
-                        style: TextStyle(color: Colors.blueGrey),),
-                      leading: const Icon(Icons.warning_amber, size: 32, color: Colors.blueGrey),
-                      backgroundColor: Colors.grey[350],
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            bannerBloc.add(HideBanner());
-                          },
-                          child: const Text('DISMISS'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            requestPermission(bannerBloc);
-                          },
-                          child: const Text('GET ACCESS'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink(); // An empty widget
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-*/
 }
