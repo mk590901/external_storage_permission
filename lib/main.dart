@@ -50,14 +50,12 @@ class HomePage extends StatelessWidget {
   final AsyncProcess pathExistFuture = AsyncPathExistFuture();
   final AsyncProcess filesFuture = AsyncFilesFuture();
 
-  final permissionExternalStorage = Permission.manageExternalStorage;
-
-  //static const platform = MethodChannel('com.example.myapp/channel');
+  //final permissionExternalStorage = Permission.manageExternalStorage;
 
   late String? _path;
+  late List<String> items = [];
 
   HomePage({super.key});
-
 
   void setPath(final String path) {
     _path = path;
@@ -133,10 +131,10 @@ Future<void> checkDirectoryWithThen(String path) {
   void processRequestPermission(final AccessBloc accessBloc) async {
     permissionRequestFuture.start((text) {
       debugPrint('permissionRequestFuture.Failed: $text');
-      accessBloc.add(Dismiss() /*NoGranted()*/);
+      accessBloc.add(Dismiss());
     }, (text) {
       debugPrint('permissionRequestFuture.Success: $text');
-      accessBloc.add(/*Granted*/ Allow(
+      accessBloc.add(Allow(
           //  Request path
           () {
         processGrantedPermission(accessBloc);
@@ -172,11 +170,14 @@ Future<void> checkDirectoryWithThen(String path) {
                     },
                     (entries) {
                       if (entries is List<FileSystemEntity>) {
+                        items.clear();
                         for (FileSystemEntity element in entries) {
                           if (element is File) {
                             debugPrint('F: ${element.path}');
+                            items.add('F: ${element.path}');
                           } else if (element is Directory) {
                             debugPrint('D: ${element.path}');
+                            items.add('D: ${element.path}');
                           }
                         }
                       } else {
@@ -229,10 +230,24 @@ Future<void> checkDirectoryWithThen(String path) {
       appBar: AppBar(title: const Text('Material Banner with BLoC')),
       body: BlocBuilder<AccessBloc, AccessState>(
         builder: (context, state) {
+      if (state.state() == AccessStates.rendering) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+
+            // children: items.map((item) => Padding(
+            //   padding: const EdgeInsets.only(left: 16, right: 16, top: 1), //.all(1.0),
+            //   child: Text(item, style: const TextStyle(fontSize: 12)),
+            // )).toList(),
+
+            children: buildListWithDividers(items),
+
+          ),
+        );
+      }
+      else
       if (state.state() == AccessStates.ask) {
         debugPrint ('MATERIAL BANNER');
-        //return const SizedBox.shrink();
-
         return Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -335,6 +350,23 @@ Future<void> checkDirectoryWithThen(String path) {
     }
 
     return 'Unknown';
+  }
+
+  List<Widget> buildListWithDividers(List<String> items) {
+    List<Widget> widgets = [];
+    for (int i = 0; i < items.length; i++) {
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 1),
+          child: Text(items[i], style: const TextStyle(fontSize: 12)),
+        ),
+      );
+      // Add a Divider after every item except the last one
+      if (i < items.length - 1) {
+        widgets.add(const Divider());
+      }
+    }
+    return widgets;
   }
 
 /*
