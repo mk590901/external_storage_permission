@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
-import 'dart:async';
-import 'banner_bloc.dart';
-import 'banner_events.dart';
-import 'banner_states.dart';
+//import 'banner_bloc.dart';
+//import 'banner_events.dart';
 import 'blocs/access_bloc.dart';
 import 'blocs/access_events.dart';
 import 'blocs/access_state.dart';
@@ -119,7 +117,7 @@ Future<void> checkDirectoryWithThen(String path) {
       }
     }
   }
-  */
+
   void requestPermission(final BannerBloc bloc) async {
     permissionRequestFuture.start(
         (text) {
@@ -130,78 +128,70 @@ Future<void> checkDirectoryWithThen(String path) {
           bloc.add(HideBanner());
         } );
   }
+  */
 
-  void requestPermission2(final AccessBloc accessBloc) async {
-    permissionRequestFuture.start(
-          (text) {
-          print('permissionRequestFuture.Failed: $text');
-          accessBloc.add(Dismiss()/*NoGranted()*/);
+  void processRequestPermission(final AccessBloc accessBloc) async {
+    permissionRequestFuture.start((text) {
+      debugPrint('permissionRequestFuture.Failed: $text');
+      accessBloc.add(Dismiss() /*NoGranted()*/);
+    }, (text) {
+      debugPrint('permissionRequestFuture.Success: $text');
+      accessBloc.add(/*Granted*/ Allow(
+          //  Request path
+          () {
+        processGrantedPermission(accessBloc);
+      }));
+    });
+  }
+
+  void processGrantedPermission(AccessBloc accessBloc) {
+    accessBloc.add(Granted(() {
+      //  Request path -> get path name
+      pathFuture.start(
+        (text) {
+          debugPrint('!pathFuture.Failed !$text');
+          accessBloc.add(Failed());
         },
-          (text) {
-          print('permissionRequestFuture.Success: $text');
-          accessBloc.add(/*Granted*/Allow(
-        //  Request path
-              () {
-                //accessBloc.add(Granted(
-                //));
-
-                accessBloc.add(Granted(() {
-                  //  Request path -> get path name
-                  pathFuture.start(
-                        (text) {
-                      debugPrint('!pathFuture.Failed !$text');
+        (entries) {
+          debugPrint('!pathFuture.Success !$entries');
+          pathExistFuture.setParameter(entries);
+          filesFuture.setParameter(entries);
+          accessBloc.add(Success(() {
+            pathExistFuture.start(
+              (text) {
+                debugPrint('!pathExistFuture.Failed !$text');
+                accessBloc.add(Failed());
+              }, //  Failed
+              (text) {
+                debugPrint('!pathExistFuture.success !$text');
+                accessBloc.add(Success(() {
+                  filesFuture.start(
+                    (text) {
+                      debugPrint('!Failed !$text');
                       accessBloc.add(Failed());
                     },
-                        (entries) {
-                      debugPrint('!pathFuture.Success !$entries');
-                      pathExistFuture.setParameter(entries);
-                      filesFuture.setParameter(entries);
-                      accessBloc.add(Success(() {
-                        pathExistFuture.start(
-                              (text) {
-                            debugPrint('!pathExistFuture.Failed !$text');
-                            accessBloc.add(Failed());
-                          },  //  Failed
-                              (text) {
-                            debugPrint('!pathExistFuture.success !$text');
-                            accessBloc.add(Success(() {
-                              filesFuture.start(
-                                    (text) {
-                                  debugPrint('!Failed !$text');
-                                  accessBloc.add(Failed());
-                                },
-                                    (entries) {
-                                  if (entries is List<FileSystemEntity>) {
-                                    for (FileSystemEntity element in entries) {
-                                      if (element is File) {
-                                        print('F: ${element.path}');
-                                      }
-                                      else
-                                      if (element is Directory) {
-                                        print('D: ${element.path}');
-                                      }
-                                    }
-                                  }
-                                  else {
-                                    print('!Success!$entries');
-                                  }
-                                  accessBloc.add(Success());
-                                },
-                              );
-                            }
-                            ));
-                          },  //  Success
-                        );
+                    (entries) {
+                      if (entries is List<FileSystemEntity>) {
+                        for (FileSystemEntity element in entries) {
+                          if (element is File) {
+                            debugPrint('F: ${element.path}');
+                          } else if (element is Directory) {
+                            debugPrint('D: ${element.path}');
+                          }
+                        }
+                      } else {
+                        debugPrint('!Success!$entries');
                       }
-                      ));
+                      accessBloc.add(Success());
                     },
                   );
                 }));
-
-
-              }
-          ));
-        } );
+              }, //  Success
+            );
+          }));
+        },
+      );
+    }));
   }
 
   @override
@@ -218,61 +208,7 @@ Future<void> checkDirectoryWithThen(String path) {
                 },  //  Failed
                 (text) {
                   debugPrint('CheckPermission.Success');
-
-                  accessBloc.add(Granted(() {
-                  //  Request path -> get path name
-                    pathFuture.start(
-                          (text) {
-                            debugPrint('!pathFuture.Failed !$text');
-                            accessBloc.add(Failed());
-                          },
-                          (entries) {
-                            debugPrint('!pathFuture.Success !$entries');
-                            pathExistFuture.setParameter(entries);
-                            filesFuture.setParameter(entries);
-                            accessBloc.add(Success(() {
-                              pathExistFuture.start(
-                                  (text) {
-                                    debugPrint('!pathExistFuture.Failed !$text');
-                                    accessBloc.add(Failed());
-                                  },  //  Failed
-                                  (text) {
-                                    debugPrint('!pathExistFuture.success !$text');
-                                    accessBloc.add(Success(() {
-                                        filesFuture.start(
-                                          (text) {
-                                            debugPrint('!Failed !$text');
-                                            accessBloc.add(Failed());
-                                          },
-                                          (entries) {
-                                            if (entries is List<FileSystemEntity>) {
-                                              for (FileSystemEntity element in entries) {
-                                                if (element is File) {
-                                                  print('F: ${element.path}');
-                                                }
-                                                else
-                                                if (element is Directory) {
-                                                  print('D: ${element.path}');
-                                                }
-                                              }
-                                            }
-                                            else {
-                                              print('!Success!$entries');
-                                            }
-                                            accessBloc.add(Success());
-                                         },
-                                      );
-                                    }
-                                    ));
-                                  },  //  Success
-                              );
-                            }
-                            ));
-                          },
-                    );
-                  }));
-
-
+                  processGrantedPermission(accessBloc);
                 },  //  Success
           );
         });
@@ -294,7 +230,7 @@ Future<void> checkDirectoryWithThen(String path) {
       body: BlocBuilder<AccessBloc, AccessState>(
         builder: (context, state) {
       if (state.state() == AccessStates.ask) {
-        print ('MATERIAL BANNER');
+        debugPrint ('MATERIAL BANNER');
         //return const SizedBox.shrink();
 
         return Center(
@@ -328,7 +264,7 @@ Future<void> checkDirectoryWithThen(String path) {
                 ),
                 TextButton(
                   onPressed: () {
-                    requestPermission2(accessBloc);
+                    processRequestPermission(accessBloc);
                   },
                   child: const Text('GET ACCESS'),
                 ),
