@@ -15,6 +15,12 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+
+## State Machine
+
+![permissions sample (3)](https://github.com/mk590901/external_storage_permission/assets/125393245/53fd9798-7d17-4344-ad07-84a8274075e6)
+
+
 ## Movie
 
 
