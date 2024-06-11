@@ -44,6 +44,8 @@ class HomePage extends StatelessWidget {
 
   late List<String> items = [];
 
+  bool _downloadFolder = false;
+
   HomePage({super.key});
 
   void processRequestPermission(final AccessBloc accessBloc) async {
@@ -133,7 +135,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Public External Storage Content',
+        title: Text('Public Storage Content',
             style: buildTitleTextStyle()),
         leading: IconButton(
           icon: const Icon(Icons.security_sharp, color: Colors.white),

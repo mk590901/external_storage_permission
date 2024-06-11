@@ -9,15 +9,19 @@ class AsyncExternalPathFuture extends AsyncProcess {
 
   static const platform = MethodChannel('com.flutter.io/channel');
 
+  bool _downloadFolder = false;
+
   @override
-  void setParameter(final dynamic parameter) {}
+  void setParameter(final dynamic parameter) {
+    _downloadFolder = parameter;
+  }
 
   @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
     try {
       action = CancelableOperation.fromFuture(
         //@platform.invokeMethod('getPublicDocumentsFolder'),
-        platform.invokeMethod('getPublicDownloadsFolder'),
+        platform.invokeMethod(_downloadFolder ? 'getPublicDownloadsFolder' : 'getPublicDocumentsFolder'),
       ).then((path) {
         // Handle completion
         debugPrint("******* AsyncExternalPathFuture.Handle completion *******");
