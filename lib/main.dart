@@ -118,7 +118,7 @@ class HomePage extends StatelessWidget {
         height: 8,
         borderColor: Colors.white,
         T: Icons.file_download,
-        F: Icons.folder_shared_outlined,
+        F: Icons.text_snippet_outlined,
         onAction: () {
           _downloadsFolder = !_downloadsFolder;
           pathFuture.setParameter(_downloadsFolder);
@@ -158,7 +158,7 @@ class HomePage extends StatelessWidget {
         title: Text('Public Storage Content',
             style: buildTitleTextStyle()),
         leading: IconButton(
-          icon: const Icon(Icons.security_sharp, color: Colors.white),
+          icon: const Icon(Icons.privacy_tip_outlined, color: Colors.white),
           // Icon widget
           onPressed: () {
             // Add your onPressed logic here
