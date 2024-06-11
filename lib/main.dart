@@ -88,17 +88,8 @@ class HomePage extends StatelessWidget {
                       accessBloc.add(Failed());
                     },
                     (entries) {
-                      if (entries is List<FileSystemEntity>) {
-                        items.clear();
-                        for (FileSystemEntity element in entries) {
-                          if (element is File) {
-                            //debugPrint('F: ${element.path}');
-                            items.add('F: ${element.path}');
-                          } else if (element is Directory) {
-                            //debugPrint('D: ${element.path}');
-                            items.add('D: ${element.path}');
-                          }
-                        }
+                      if (entries is List/*<FileSystemEntity>*/<String>) {
+                        items = entries;
                       } else {
                         debugPrint('!Success!$entries');
                       }
@@ -220,9 +211,9 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Task in progress...\nPlease wait',
+                    'Receive files list in progress...\nPlease wait',
                     textAlign: TextAlign.center,
-                    style: buildTextStyle(),
+                    style: buildTextStyle(14),
                   ),
                 ],
               ),
@@ -236,7 +227,7 @@ class HomePage extends StatelessWidget {
                     children: [
                       Text(
                         'State: ${state.state()}',
-                        style: buildTextStyle(),
+                        style: buildTextStyle(18),
                       ),
                     ],
                   ),
@@ -282,12 +273,12 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  TextStyle buildTextStyle() {
-    return const TextStyle(
+  TextStyle buildTextStyle(final double size) {
+    return TextStyle(
       color: Colors.lightBlue,
-      fontSize: 18,
+      fontSize: size,
       fontStyle: FontStyle.normal,
-      shadows: [
+      shadows: const [
         Shadow(
           blurRadius: 4.0,
           color: Colors.black12,

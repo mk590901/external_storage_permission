@@ -17,7 +17,6 @@ class AsyncFilesFuture extends AsyncProcess {
 
   @override
   Future<void> process(VoidCallbackParameter? success, VoidCallbackParameter? failed) async {
-    //@String path = "/storage/emulated/0/Download";
     String path = _path;
     try {
       action = CancelableOperation.fromFuture(
@@ -26,21 +25,17 @@ class AsyncFilesFuture extends AsyncProcess {
         // Handle completion
         debugPrint("******* AsyncFilesFuture.Handle completion *******");
         if (entities != null) {
-          //debugPrint("AsyncFilesFuture.Ok->$entities");
-
-          // for (FileSystemEntity element in entities) {
-          //   if (element is File) {
-          //     print('File  : ${element.path}');
-          //   }
-          //   else
-          //   if (element is Directory) {
-          //     print('Folder: ${element.path}');
-          //   }
-          // }
-
-          //String json = jsonString(entities);
-
-          success?.call(entities);
+          List<String> items = [];
+          for (FileSystemEntity element in entities) {
+            if (element is File) {
+              //debugPrint('F: ${element.path}');
+              items.add('F: ${element.path}');
+            } else if (element is Directory) {
+              //debugPrint('D: ${element.path}');
+              items.add('D: ${element.path}');
+            }
+          }
+          success?.call(items);
          }
         else {
           debugPrint("AsyncFilesFuture.Failed");
