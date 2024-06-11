@@ -10,6 +10,7 @@ import 'futures/async_es_permission_status_future.dart';
 import 'futures/async_files_future.dart';
 import 'futures/async_path_exist_future.dart';
 import 'futures/basic_async_process.dart';
+import 'ui/widgets/flat_rounded_switch.dart';
 
 void main() {
   runApp(const CheckPermissionApp());
@@ -44,7 +45,7 @@ class HomePage extends StatelessWidget {
 
   late List<String> items = [];
 
-  bool _downloadFolder = false;
+  bool _downloadsFolder = false;
 
   HomePage({super.key});
 
@@ -89,7 +90,7 @@ class HomePage extends StatelessWidget {
                       accessBloc.add(Failed());
                     },
                     (entries) {
-                      if (entries is List/*<FileSystemEntity>*/<String>) {
+                      if (entries is List<String>) {
                         items = entries;
                       } else {
                         debugPrint('!Success!$entries');
@@ -109,6 +110,25 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accessBloc = BlocProvider.of<AccessBloc>(context);
+
+    FlatRoundedSwitch roundedSwitch = FlatRoundedSwitch(
+        iconColor: Colors.white,
+        borderWidth: 0.2,
+        width: 12,
+        height: 8,
+        borderColor: Colors.white,
+        T: Icons.file_download,
+        F: Icons.folder_shared_outlined,
+        onAction: () {
+          _downloadsFolder = !_downloadsFolder;
+          pathFuture.setParameter(_downloadsFolder);
+          debugPrint("downloadFolder->$_downloadsFolder");
+          if (_downloadsFolder) {
+            debugPrint("DOWNLOADS");
+          } else {
+            debugPrint("DOCUMENTS");
+          }
+        });
 
     Event getEvent(AccessStates state) {
       if (state == AccessStates.idle) {
@@ -145,6 +165,10 @@ class HomePage extends StatelessWidget {
           },
         ),
         backgroundColor: Colors.lightBlue,
+        actions: [
+          roundedSwitch,
+          const SizedBox(width: 8,),
+        ],
       ),
       body: BlocBuilder<AccessBloc, AccessState>(
         builder: (context, state) {
