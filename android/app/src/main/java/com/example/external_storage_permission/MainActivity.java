@@ -13,7 +13,7 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 
 public class MainActivity extends FlutterActivity {
-    private static final String CHANNEL = "com.example.myapp/channel";
+    private static final String CHANNEL = "com.flutter.io/channel";
     private final String TAG = "permission";
 
     @Override

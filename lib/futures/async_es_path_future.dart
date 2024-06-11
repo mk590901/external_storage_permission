@@ -7,7 +7,7 @@ import 'basic_async_process.dart';
 
 class AsyncExternalPathFuture extends AsyncProcess {
 
-  static const platform = MethodChannel('com.example.myapp/channel');
+  static const platform = MethodChannel('com.flutter.io/channel');
 
   @override
   void setParameter(final dynamic parameter) {}
