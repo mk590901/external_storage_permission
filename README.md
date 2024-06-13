@@ -20,7 +20,7 @@ As a matter of fact, the five mentioned classes are responsible for the technica
 
 ## Implementation
 
-I was able to chain the above operations into a sequence of calls to five asynchronous futures built into the state machine below. The latter is associated with a specially created class called __AccessBloc__. In this decision I used __trans__(__ition__)- functions, which are called when moving from one state to another in state machines under the influence of event and run callback functions passed as parameter to event. Can also notice that uses AsyncProcess objects that run callbacks don't use __await__ operators. I.e. absolutely all operations are asynchronous.
+I was able to chain the above operations into a sequence of calls to five asynchronous futures built into the state machine below. The latter is associated with a specially created class called __AccessBloc__. In this decision I used __trans__(__ition__)- functions, which are called when moving from one state to another in state machines under the influence of event and run callback functions passed as parameter to event. Can also notice that uses __AsyncProcess__ objects that run callbacks don't use __await__ operators. I.e. absolutely all operations are asynchronous.
 
 ## State Machine
 
