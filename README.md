@@ -12,11 +12,8 @@ Basically there are two main problems that need to be solved:
 
 ## Solution
 
-To solve the first problem, need to allow the application access to manage external storage: __android.permission.MANAGE_EXTERNAL_STORAGE__ and possibility for reading/writing files: __android.permission.READ_EXTERNAL_STORAGE__ and __android.permission.WRITE_EXTERNAL_STORAGE__. These permissions must be described in the application manifest __AndroidManifest.xml__.
-
-Next, need to use the standard __Flutter__ plugin __permission_handler__ https://pub.dev/packages/permission_handler from __pub.dev__ and from the application request permission to use __android.permission.MANAGE_EXTERNAL_STORAGE__, and select permission. Request is implemented in the __AsyncPermissionRequestFuture__ class in the __process__ method. Can first find out whether access is allowed or not by using the __AsyncPermissionStatusFuture__ class. This will save operations. Pay attention on method process.
-
-
+* To solve the first problem, need to allow the application access to manage external storage: __android.permission.MANAGE_EXTERNAL_STORAGE__ and possibility for reading/writing files: __android.permission.READ_EXTERNAL_STORAGE__ and __android.permission.WRITE_EXTERNAL_STORAGE__. These permissions must be described in the application manifest __AndroidManifest.xml__. Next, need to use the standard __Flutter__ plugin __permission_handler__ https://pub.dev/packages/permission_handler from __pub.dev__ and from the application request permission to use __android.permission.MANAGE_EXTERNAL_STORAGE__, and select permission. Request is implemented in the __AsyncPermissionRequestFuture__ class in the __process__ method. Can first find out whether access is allowed or not by using the __AsyncPermissionStatusFuture__ class. This will save operations. Pay attention on method __process__.
+* To determine absolute paths to shared folders, a plugin was written in __Java__, encapsulated in the __MainActivity__ class and used in the method process in __AsyncExternalPathFuture__ class.
 
 
 ## State Machine
